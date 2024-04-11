@@ -8,73 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const { Client } = require('pg');
-const client = new Client({
-    connectionString: "postgresql://test_owner:OBj4vad6NYXb@ep-late-night-a5ehdd4z.us-east-2.aws.neon.tech/test?sslmode=require"
-});
-function createUsersTable() {
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
+function insertUser(username, password, firstName, lastName) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.connect();
-        const result = yield client.query(`
-        CREATE TABLE users (
-            id SERIAL PRIMARY KEY,
-            username VARCHAR(50) UNIQUE NOT NULL,
-            email VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
-    `);
-        console.log(result);
-    });
-}
-// Async function to fetch user data from the database given an email
-function getUser(email) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield client.connect();
-            // Ensure client connection is established
-            const query = 'SELECT * FROM users WHERE email = $1';
-            const values = [email];
-            const result = yield client.query(query, values);
-            if (result.rows.length > 0) {
-                console.log('User found:', result.rows[0]); // Output user data
-                return result.rows[0]; // Return the user data
+        const res = yield prisma.user.create({
+            data: {
+                username,
+                password,
+                firstName,
+                lastName
+            },
+            select: {
+                id: true,
+                password: true,
+                firstName: true
             }
-            else {
-                console.log('No user found with the given email.');
-                return null; // Return null if no user was found
-            }
-        }
-        catch (err) {
-            console.error('Error during fetching user:', err);
-            throw err; // Rethrow or handle error appropriately
-        }
-        finally {
-            yield client.end(); // Close the client connection
-        }
+        });
+        console.log(res);
     });
 }
-//insertData
-function insertData(username, email, password) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield client.connect(); // Ensure client connection is established
-            // Use parameterized query to prevent SQL injection
-            const insertQuery = "INSERT INTO users (username, email, password) VALUES ($1, $2, $3)";
-            const values = [username, email, password];
-            const res = yield client.query(insertQuery, values);
-            console.log('Insertion success:', res); // Output insertion result
-        }
-        catch (err) {
-            console.error('Error during the insertion:', err);
-        }
-        finally {
-            yield client.end(); // Close the client connection
-        }
-    });
-}
-// Example usage
-// createUsersTable();
-// insertData('Rishika','ritikan018@gmail.com', "rishika")
-// insertData('Kaushal','khachaneks22@gmail.com','Kaushal')
-getUser('khachaneks22@gmail.com');
+insertUser('Ritika', 'RDN', 'Ritika', 'Naphade');
