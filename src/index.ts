@@ -3,20 +3,26 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// interface UpdateParams {
-//     firstName: string;
-//     lastName: string; 
-// }
+interface UpdateParams {
+    firstName: string;
+    lastName: string; 
+}
 
 async function updateUser(username: string, {
     firstName,
     lastName
-}: any) {
-   prisma.user.update({
+}: UpdateParams) {
+   const res = await prisma.user.update({
     where: {username: username},
     data: {
       firstName,
       lastName
     }
-   })  
+   })
+   console.log(res)  
 }
+
+updateUser('Ritika',{
+  firstName: "Ritika",
+  lastName: "Nafade"
+})
